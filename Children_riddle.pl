@@ -1,25 +1,19 @@
-% Defining basic family relationships
-parent(X, Y) :- child(Y, X).
-child(X, Y) :- parent(Y, X).
-sibling(X, Y) :- parent(Z, X), parent(Z, Y), X \= Y.
-father(X, Y) :- male(X), parent(X, Y).
-mother(X, Y) :- female(X), parent(X, Y).
-son(X, Y) :- male(X), child(X, Y).
-daughter(X, Y) :- female(X), child(X, Y).
+% Define the rule for the riddle
+that_man(X) :-
+    father(Y, X),     % X's father is Y
+    father(Z, Y),     % Y's father is Z
+    father(Z, me),    % My father is Z, which means Y is me
+    X \= me.          % Ensure X is not me (so X is my son)
 
-% Facts for male and female predicates
-male(john).
-male(father_son).
-female(mary).
+% Facts: me is the speaker
+father(me, my_son).      % I am the father of my son
+father(my_father, me).   % My father is the father of me
 
-% The riddle statement and its interpretation
-that_man_father_is_my_father_son(ThatMan) :-
-    father(MyFather, Me),           % My father's son refers to myself or my brother
-    father(ThatManFather, ThatMan), % That man's father is my father's son
-    MyFather = ThatManFather,     % That man's father is the same as my father's son
-    ThatMan = Me.                 % Therefore, 'that man' must be myself (Me)
+% Initialization to run the query when the program starts
+:- initialization(main).
 
-% Starting the query
-solve_riddle :-
-    that_man_father_is_my_father_son(Who),
-    write('That man is: '), write(Who), nl.
+main :- 
+    that_man(X),
+    write('That man is: '), 
+    write(X), nl,
+    halt.
